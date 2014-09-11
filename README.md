@@ -1,0 +1,4 @@
+proto-configurator
+==================
+
+Configurator prototype.
