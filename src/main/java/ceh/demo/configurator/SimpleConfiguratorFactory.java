@@ -1,8 +1,5 @@
 package ceh.demo.configurator;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import ceh.demo.Choice;
 import ceh.demo.Configurator;
 import ceh.demo.ConfiguratorFactory;
@@ -37,7 +34,7 @@ public class SimpleConfiguratorFactory implements ConfiguratorFactory {
   private Node makeSiblings(ConfigNode[] siblings) {
     Node node = null;
     Node lastNode = null;
-    for (int i = siblings.length - 1; i > 0; i--) {
+    for (int i = siblings.length - 1; i >= 0; i--) {
       ConfigNode configNode = siblings[i];
       if (configNode instanceof ConfigSectionNode) {
         node = makeSection(configNode, lastNode);
@@ -81,7 +78,7 @@ public class SimpleConfiguratorFactory implements ConfiguratorFactory {
     Choice choice = null;
     Choice lastChoice = null;
     int size = 0;
-    for (int i = selection.choices.length - 1; i > 0; i--) {
+    for (int i = selection.choices.length - 1; i >= 0; i--) {
       choice = makeChoice(selection.choices[i], lastChoice); 
       lastChoice = choice;
       size++;
@@ -90,8 +87,8 @@ public class SimpleConfiguratorFactory implements ConfiguratorFactory {
   }
 
   private Choice makeChoice(ConfigChoice choice, Choice sibling) {
-    return new ChoiceNode(choice.name, 
-        makeSiblings(new ConfigNode[] { choice.subtree }), sibling);
+    Node subtree = choice.subtree != null ? makeSiblings(new ConfigNode[] { choice.subtree }) : null;
+	return new ChoiceNode(choice.name, subtree, sibling);
   }
   
 }

@@ -5,8 +5,10 @@ import ceh.demo.Node;
 abstract class AbstractNode implements Node {
 
   private final String name;
-  private final Node subtree;
   private final Node sibling;
+  
+  private Node subtree;
+  private boolean satisfied;
   
   /**
    * Constructs a new instance.
@@ -27,19 +29,26 @@ abstract class AbstractNode implements Node {
 
   @Override
   public final boolean isSatisfied() {
-    // TODO Auto-generated method stub
-    return false;
+    return satisfied;
   }
 
+  public void setSatisfied(boolean satisfied) {
+	this.satisfied = satisfied;
+  }
+  
   @Override
   public final boolean isEnabled() {
     // TODO Auto-generated method stub
-    return false;
+    return true;
   }
 
   @Override
-  public final Node getSubtree() {
+  public Node getSubtree() {
     return subtree;
+  }
+
+  public void setSubtree(Node subtree) {
+	this.subtree = subtree;
   }
 
   @Override

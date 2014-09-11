@@ -29,10 +29,4 @@ public class JaxbConfigurationLoader implements ConfigurationLoader {
     }
   }
   
-  public static void main(String[] args) throws Exception {
-    new JaxbConfigurationLoader().load(JaxbConfigurationLoader.class.getClassLoader().
-        getResource("configuration.xml"));
-    
-  }
-
 }
