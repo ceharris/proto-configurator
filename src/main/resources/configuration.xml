@@ -1,0 +1,37 @@
+<configuration xmlns="urn:nis.vt.edu:configurator:1.0">
+  <property name="orderType">
+    <select>
+      <choice name="service">
+        <section name="section.service">
+          <property name="service.type">
+            <select>
+              <choice name="voice">
+                <section name="section.service.voice">
+                  <property name="service.voice.application">
+                    <select>
+                      <choice name="ip" />
+                      <choice name="digital" />
+                      <choice name="analog" />
+                    </select>
+                  </property>
+                  <property name="service.voice.location">
+                    <text />
+                  </property>
+                  <property name="service.voice.callingPrivilege">
+                    <select>
+                      <choice name="domestic" />
+                      <choice name="international" />
+                    </select>
+                  </property>
+                </section>
+              </choice>
+              <choice name="data" />
+              <choice name="video" />
+            </select>
+          </property>
+        </section>
+      </choice>
+      <choice name="product" />
+    </select>
+  </property>
+</configuration>
