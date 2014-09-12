@@ -1,26 +1,28 @@
 package ceh.demo.configurator;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
-import ceh.demo.Choice;
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+
 import ceh.demo.Configurator;
 import ceh.demo.Node;
-import ceh.demo.Property;
-import ceh.demo.Selection;
 
 public class SimpleConfigurator implements Configurator {
 
-  private final Map<String, Object> properties = new LinkedHashMap<>();
-
+  private final List<Rule> rules = new LinkedList<>();
+  
   private final Node root;
+  private final ScriptEngine engine;
 
   /**
    * Constructs a new instance.
    * @param root
    */
-  public SimpleConfigurator(Node root) {
+  public SimpleConfigurator(Node root, ScriptEngine engine) {
     this.root = root;
+    this.engine = engine;
   }
 
   @Override
@@ -28,64 +30,58 @@ public class SimpleConfigurator implements Configurator {
     return root;
   }
 
+  public void rule(Object rule) {
+    rules.add(((Invocable) engine).getInterface(rule, Rule.class));    
+  }
+
+  @Override
+  public Node node(String name) {
+    Node node = root != null ? node(name, root) : null;
+    if (node != null) return node;
+    throw new IllegalArgumentException("node " + name + " not found");      
+  }
+
+  private Node node(String name, Node node) {
+    if (node == null) return null;
+    
+    if (node.getName().equals(name)) return node;
+    
+    Node sibling = node(name, node.getSibling());
+    if (sibling != null) return sibling;
+    
+    Node subtree = node(name, node.getSubtree());
+    if (subtree != null) return subtree;
+
+    if (node instanceof SelectionPropertyNode) {
+      Node choice = node(name, 
+          ((SelectionPropertyNode) node).getSelection().getChoices());
+      if (choice != null) return choice;
+    }
+    
+    return null;
+  }
+  
   @Override
   public void update() {
-    updateIsSatisfied(root);
-    linkToSelectedChoices(root);
-  }
-
-  private void updateIsSatisfied(Node node) {
-    if (node == null) return;
-    updateIsSatisfied(node.getSubtree());
-    if (contains(node.getName())) {
-      ((AbstractNode) node).setSatisfied(true);
-    }
-    updateIsSatisfied(node.getSibling());
-  }
-
-  private void linkToSelectedChoices(Node node) {
-    if (node == null) return;
-    linkToSelectedChoices(node.getSubtree());
-    if (node instanceof Property
-        && ((Property) node).getInput() instanceof Selection) {
-      PropertyNode property = (PropertyNode) node;
-      if (property.isSatisfied() && property.isEnabled()) {
-        property.setSubtree(findChoice(
-            (String) properties.get(property.getName()),
-            ((Selection) property.getInput()).getChoices()));
-      }
-      else {
-        property.setSubtree(null);
-      }
-    }
-    linkToSelectedChoices(node.getSibling());
-  }
-
-  private Node findChoice(String name, Choice choice) {
-    if (choice == null) {
-      throw new IllegalStateException("can't find choice " + name);
-    }
-    if (choice.getName().equals(name)) return choice.getSubtree();
-    return findChoice(name, (Choice) choice.getSibling());
-  }
-
-  @Override
-  public Object get(String name) {
-    return properties.get(name);
-  }
-
-  @Override
-  public Object put(String name, Object value) {
-    return properties.put(name, value);
-  }
-
-  @Override
-  public boolean contains(String name) {
-    return properties.containsKey(name);
   }
 
   @Override
   public String toString() {
-    return properties.toString();
+    return toString(root);
   }
+  
+  private String toString(Node node) {
+    if (node == null) return "";
+
+    String tail = toString(node.getSubtree())
+        + toString(node.getSibling());
+
+    if (node instanceof PropertyNode) {
+      tail = node.getName() + "=" + ((PropertyNode) node).getValue()
+          + "\n" + tail;
+    }
+      
+    return tail;
+  }
+  
 }

@@ -1,13 +1,11 @@
 package ceh.demo;
 
-public interface Selection extends Input {
+public interface SelectionProperty extends Property {
 
-  int size();
-
-  Choice getChoices();
-  
   void enable(String... names);
   
   void disable(String... names);
+    
+  Selection getSelection();
   
 }

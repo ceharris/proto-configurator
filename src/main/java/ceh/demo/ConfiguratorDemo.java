@@ -3,9 +3,9 @@ package ceh.demo;
 public class ConfiguratorDemo {
 
   public static void main(String[] args) throws Exception {
-    ConsoleUI.start(
-        ConfiguratorDemo.class.getClassLoader().getResource(
-            "configuration.xml"), System.in, System.out);
+    ClassLoader classLoader = ConfiguratorDemo.class.getClassLoader();
+    ConsoleUI.start(classLoader.getResource("configuration.xml"), 
+        classLoader.getResource("configuration.js"), System.in, System.out);
   }
 
 }

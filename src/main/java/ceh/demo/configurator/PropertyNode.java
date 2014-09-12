@@ -8,6 +8,8 @@ public class PropertyNode extends AbstractNode implements Property {
 
   private final Input input;
 
+  private Object value;
+  
   /**
    * Constructs a new instance.
    * 
@@ -23,6 +25,38 @@ public class PropertyNode extends AbstractNode implements Property {
   @Override
   public Input getInput() {
     return input;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean isNull() {
+    return value == null;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Object getValue() {
+    return value;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Object setValue(Object value) {
+    Object oldValue = this.value;
+    this.value = value;
+    return oldValue;
+  }
+
+  @Override
+  public String toString() {
+    if (value == null) return "";
+    return value.toString();
   }
 
 }

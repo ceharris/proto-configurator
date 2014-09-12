@@ -11,9 +11,13 @@ import java.net.URL;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import javax.script.ScriptException;
+
 import ceh.demo.configuration.JaxbConfigurationLoader;
 
 public class ConsoleUI implements Runnable {
+
+  private static final String SECTION_VISITED = "visited";
 
   private static final ResourceBundle bundle = ResourceBundle
       .getBundle(ConsoleUI.class.getPackage().getName() + ".messages");
@@ -67,14 +71,22 @@ public class ConsoleUI implements Runnable {
 
   private Node findNextNode(Node node) {
     if (node == null) return null;
-    if (node.isEnabled() && !node.isSatisfied()) return node;
+    if (node.isEnabled()) {
+      if (node instanceof Property && ((Property) node).isNull()) {
+        return node;
+      }
+      if (node instanceof Section 
+          && !(Boolean) node.getAttribute(SECTION_VISITED, false)) {
+        return node;
+      }
+    }
     if (node.getSubtree() != null) return findNextNode(node.getSubtree());
     return findNextNode(node.getSibling());
   }
 
   private void handleSection(Section node, Configurator configurator) {
     out.format("\n%s\n", getLabel(node));
-    configurator.put(node.getName(), "visited");
+    node.setAttribute(SECTION_VISITED, true);
   }
 
   private void handleProperty(Property node, Configurator configurator)
@@ -117,7 +129,7 @@ public class ConsoleUI implements Runnable {
       }
     }
     String name = findChoice(selection, choice).getName();
-    configurator.put(node.getName(), name);
+    node.setValue(name);
   }
 
   private Choice findChoice(Selection selection, int index) {
@@ -142,7 +154,7 @@ public class ConsoleUI implements Runnable {
       value = value.trim();
     }
 
-    configurator.put(node.getName(), value.trim());
+    node.setValue(value.trim());
   }
 
   private String getLabel(Node node) {
@@ -163,11 +175,13 @@ public class ConsoleUI implements Runnable {
     }
   }
 
-  public static void start(URL config, InputStream in, OutputStream out)
-      throws IOException, ConfigurationException {
+  public static void start(URL configLocation, URL rulesLocation, 
+      InputStream in, OutputStream out) throws IOException, 
+      ConfigurationException, ScriptException {
+    
     ConfigurationLoader loader = new JaxbConfigurationLoader();
-    ConfiguratorFactory factory = loader.load(config);
-    Configurator configurator = factory.newConfigurator();
+    ConfiguratorFactory factory = loader.load(configLocation);
+    Configurator configurator = factory.newConfigurator(rulesLocation);
 
     ConsoleUI ui =
         new ConsoleUI(new BufferedReader(new InputStreamReader(in)),

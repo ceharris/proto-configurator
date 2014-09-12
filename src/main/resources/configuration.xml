@@ -39,48 +39,20 @@
                 <section name="section.product.phone">
                   <property name="product.phone.model">
                     <select>
-                      <choice name="ipStandard"/>
-                      <choice name="ipExecutive"/>
-                      <choice name="digital"/>
-                      <choice name="analog"/>
+                      <choice name="ipStandard" />
+                      <choice name="ipExecutive" />
+                      <choice name="digital" />
+                      <choice name="analog" />
                     </select>
                   </property>
-                </section>                
+                </section>
               </choice>
-              <choice name="wagon"/>
+              <choice name="wagon" />
             </select>
           </property>
         </section>
       </choice>
     </select>
   </property>
-  
-   <when>
-     <predicate>
-     	context.service.voice.application == "ip"
-     </predicate>
-     <action>
-       <with name="model" ref="product.phone.model">
-         ipStandard.enabled = true
-         ipEnhanced.enabled = true
-         digital.enabled = false
-         analog.enabled = false
-       </with>
-     </action>
-   </when>  
 
-   <when>
-     <predicate>
-     	context.service.voice.application == "digital"
-     </predicate>
-     <action>
-       <with name="model" ref="product.phone.model">
-         ipStandard.enabled = false
-         ipEnhanced.enabled = false
-         digital.enabled = true
-         analog.enabled = false
-       </with>
-     </action>
-   </when>  
-   
 </configuration>

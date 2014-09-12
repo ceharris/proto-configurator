@@ -1,5 +1,14 @@
 package ceh.demo.configurator;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 import ceh.demo.Choice;
 import ceh.demo.Configurator;
 import ceh.demo.ConfiguratorFactory;
@@ -27,8 +36,16 @@ public class SimpleConfiguratorFactory implements ConfiguratorFactory {
   }
 
   @Override
-  public Configurator newConfigurator() {
-    return new SimpleConfigurator(makeSiblings(config.children));
+  public Configurator newConfigurator(URL rulesLocation) 
+      throws ScriptException {
+    ScriptEngineManager manager = new ScriptEngineManager();
+    ScriptEngine engine = manager.getEngineByMimeType("text/javascript"); 
+    
+    SimpleConfigurator configurator = new SimpleConfigurator(
+        makeSiblings(config.children), engine);
+    
+    loadRules(rulesLocation, configurator, engine);    
+    return configurator;
   }
 
   private Node makeSiblings(ConfigNode[] siblings) {
@@ -57,8 +74,13 @@ public class SimpleConfiguratorFactory implements ConfiguratorFactory {
   }
 
   private Node makeProperty(ConfigPropertyNode configNode, Node sibling) {
+    Input input = makeInput(configNode.input);
+    if (input instanceof SelectionInput) {
+      return new SelectionPropertyNode(configNode.name, sibling, 
+          (SelectionInput) input);
+    }
     return new PropertyNode(configNode.name, sibling,
-        makeInput(configNode.input));
+        input);
   }
 
   private Input makeInput(ConfigInput input) {
@@ -75,8 +97,8 @@ public class SimpleConfiguratorFactory implements ConfiguratorFactory {
   }
 
   private Input makeSelection(ConfigSelectInput selection) {
-    Choice choice = null;
-    Choice lastChoice = null;
+    ChoiceNode choice = null;
+    ChoiceNode lastChoice = null;
     int size = 0;
     for (int i = selection.choices.length - 1; i >= 0; i--) {
       choice = makeChoice(selection.choices[i], lastChoice);
@@ -86,11 +108,34 @@ public class SimpleConfiguratorFactory implements ConfiguratorFactory {
     return new SelectionInput(size, choice);
   }
 
-  private Choice makeChoice(ConfigChoice choice, Choice sibling) {
-    Node subtree =
-        choice.subtree != null ? makeSiblings(new ConfigNode[] { choice.subtree })
-            : null;
+  private ChoiceNode makeChoice(ConfigChoice choice, Choice sibling) {
+    Node subtree = choice.subtree != null ? 
+        makeSiblings(new ConfigNode[] { choice.subtree }) : null;
     return new ChoiceNode(choice.name, subtree, sibling);
+  }
+
+  private void loadRules(URL location, Configurator configurator, 
+      ScriptEngine engine) throws ScriptException {
+    engine.put("out", System.out);
+    engine.put("ctx", configurator);
+    engine.eval("function rule(r) { ctx.rule(r) }");
+    try {
+      InputStream inputStream = location.openStream();
+      try {
+        engine.eval(new InputStreamReader(inputStream));
+      }
+      finally {
+        try {
+          inputStream.close();
+        }
+        catch (IOException ex) {
+          ex.printStackTrace(System.err);
+        }
+      }
+    }
+    catch (IOException ex) {
+      throw new ScriptException(ex);
+    }
   }
 
 }

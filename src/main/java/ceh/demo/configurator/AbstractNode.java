@@ -1,15 +1,20 @@
 package ceh.demo.configurator;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ceh.demo.Node;
 
 abstract class AbstractNode implements Node {
 
+  private final Map<String, Object> attributes = new HashMap<>();
+  
   private final String name;
   private final Node sibling;
 
   private Node subtree;
-  private boolean satisfied;
-
+  private boolean enabled = true;
+  
   /**
    * Constructs a new instance.
    * @param name
@@ -28,18 +33,15 @@ abstract class AbstractNode implements Node {
   }
 
   @Override
-  public final boolean isSatisfied() {
-    return satisfied;
-  }
-
-  public void setSatisfied(boolean satisfied) {
-    this.satisfied = satisfied;
+  public final boolean isEnabled() {
+    return enabled;
   }
 
   @Override
-  public final boolean isEnabled() {
-    // TODO Auto-generated method stub
-    return true;
+  public boolean setEnabled(boolean enabled) {
+    boolean oldEnabled = this.enabled;
+    this.enabled = enabled;
+    return oldEnabled;
   }
 
   @Override
@@ -54,6 +56,34 @@ abstract class AbstractNode implements Node {
   @Override
   public final Node getSibling() {
     return sibling;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Object getAttribute(String name) {
+    return attributes.get(name);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Object getAttribute(String name, Object defaultValue) {
+    Object value = getAttribute(name);
+    if (value == null) {
+      value = defaultValue;
+    }
+    return value;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Object setAttribute(String name, Object value) {
+    return attributes.put(name, value);
   }
 
 }
