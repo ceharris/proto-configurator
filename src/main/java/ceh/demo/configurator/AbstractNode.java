@@ -6,10 +6,10 @@ abstract class AbstractNode implements Node {
 
   private final String name;
   private final Node sibling;
-  
+
   private Node subtree;
   private boolean satisfied;
-  
+
   /**
    * Constructs a new instance.
    * @param name
@@ -33,9 +33,9 @@ abstract class AbstractNode implements Node {
   }
 
   public void setSatisfied(boolean satisfied) {
-	this.satisfied = satisfied;
+    this.satisfied = satisfied;
   }
-  
+
   @Override
   public final boolean isEnabled() {
     // TODO Auto-generated method stub
@@ -48,7 +48,7 @@ abstract class AbstractNode implements Node {
   }
 
   public void setSubtree(Node subtree) {
-	this.subtree = subtree;
+    this.subtree = subtree;
   }
 
   @Override

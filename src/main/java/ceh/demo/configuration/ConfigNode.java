@@ -6,5 +6,5 @@ public class ConfigNode {
 
   @XmlAttribute
   public String name;
-  
+
 }

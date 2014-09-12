@@ -47,7 +47,7 @@ public class SimpleConfiguratorFactory implements ConfiguratorFactory {
       }
       lastNode = node;
     }
-    
+
     return node;
   }
 
@@ -57,7 +57,7 @@ public class SimpleConfiguratorFactory implements ConfiguratorFactory {
   }
 
   private Node makeProperty(ConfigPropertyNode configNode, Node sibling) {
-    return new PropertyNode(configNode.name, sibling, 
+    return new PropertyNode(configNode.name, sibling,
         makeInput(configNode.input));
   }
 
@@ -79,7 +79,7 @@ public class SimpleConfiguratorFactory implements ConfiguratorFactory {
     Choice lastChoice = null;
     int size = 0;
     for (int i = selection.choices.length - 1; i >= 0; i--) {
-      choice = makeChoice(selection.choices[i], lastChoice); 
+      choice = makeChoice(selection.choices[i], lastChoice);
       lastChoice = choice;
       size++;
     }
@@ -87,8 +87,10 @@ public class SimpleConfiguratorFactory implements ConfiguratorFactory {
   }
 
   private Choice makeChoice(ConfigChoice choice, Choice sibling) {
-    Node subtree = choice.subtree != null ? makeSiblings(new ConfigNode[] { choice.subtree }) : null;
-	return new ChoiceNode(choice.name, subtree, sibling);
+    Node subtree =
+        choice.subtree != null ? makeSiblings(new ConfigNode[] { choice.subtree })
+            : null;
+    return new ChoiceNode(choice.name, subtree, sibling);
   }
-  
+
 }

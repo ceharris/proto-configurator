@@ -14,12 +14,12 @@ import ceh.demo.configurator.SimpleConfiguratorFactory;
 public class JaxbConfigurationLoader implements ConfigurationLoader {
 
   @Override
-  public ConfiguratorFactory load(URL location)
-      throws ConfigurationException {
+  public ConfiguratorFactory load(URL location) throws ConfigurationException {
     try {
-      JAXBContext context = JAXBContext.newInstance(
-          Configuration.class, ConfigPropertyNode.class, ConfigSectionNode.class, 
-          ConfigSelectInput.class, ConfigTextInput.class);
+      JAXBContext context =
+          JAXBContext.newInstance(Configuration.class,
+              ConfigPropertyNode.class, ConfigSectionNode.class,
+              ConfigSelectInput.class, ConfigTextInput.class);
       Unmarshaller unmarshaller = context.createUnmarshaller();
       Configuration config = (Configuration) unmarshaller.unmarshal(location);
       return new SimpleConfiguratorFactory(config);
@@ -28,5 +28,5 @@ public class JaxbConfigurationLoader implements ConfigurationLoader {
       throw new ConfigurationException(ex);
     }
   }
-  
+
 }

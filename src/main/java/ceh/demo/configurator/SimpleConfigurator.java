@@ -11,10 +11,10 @@ import ceh.demo.Selection;
 
 public class SimpleConfigurator implements Configurator {
 
-  private final Map<String, Object> properties = new LinkedHashMap<>(); 
+  private final Map<String, Object> properties = new LinkedHashMap<>();
 
   private final Node root;
-  
+
   /**
    * Constructs a new instance.
    * @param root
@@ -35,35 +35,35 @@ public class SimpleConfigurator implements Configurator {
   }
 
   private void updateIsSatisfied(Node node) {
-	if (node == null) return;
-	updateIsSatisfied(node.getSubtree());
-	if (contains(node.getName())) {
-	  ((AbstractNode) node).setSatisfied(true);
-	}
-	updateIsSatisfied(node.getSibling());
+    if (node == null) return;
+    updateIsSatisfied(node.getSubtree());
+    if (contains(node.getName())) {
+      ((AbstractNode) node).setSatisfied(true);
+    }
+    updateIsSatisfied(node.getSibling());
   }
-  
+
   private void linkToSelectedChoices(Node node) {
-	if (node == null) return;
-	linkToSelectedChoices(node.getSubtree());
-	if (node instanceof Property
-	    && ((Property) node).getInput() instanceof Selection) {
-		PropertyNode property = (PropertyNode) node;
-		if (property.isSatisfied() && property.isEnabled()) {
-		  property.setSubtree(findChoice((String) properties.get(property.getName()),
-				  ((Selection) property.getInput()).getChoices()));
-		}
-		else {
-		  property.setSubtree(null);
-		}
-	}
-	linkToSelectedChoices(node.getSibling());
+    if (node == null) return;
+    linkToSelectedChoices(node.getSubtree());
+    if (node instanceof Property
+        && ((Property) node).getInput() instanceof Selection) {
+      PropertyNode property = (PropertyNode) node;
+      if (property.isSatisfied() && property.isEnabled()) {
+        property.setSubtree(findChoice(
+            (String) properties.get(property.getName()),
+            ((Selection) property.getInput()).getChoices()));
+      }
+      else {
+        property.setSubtree(null);
+      }
+    }
+    linkToSelectedChoices(node.getSibling());
   }
-  
 
   private Node findChoice(String name, Choice choice) {
     if (choice == null) {
-    	throw new IllegalStateException("can't find choice " + name);
+      throw new IllegalStateException("can't find choice " + name);
     }
     if (choice.getName().equals(name)) return choice.getSubtree();
     return findChoice(name, (Choice) choice.getSibling());
@@ -71,12 +71,12 @@ public class SimpleConfigurator implements Configurator {
 
   @Override
   public Object get(String name) {
-	return properties.get(name);
+    return properties.get(name);
   }
 
   @Override
   public Object put(String name, Object value) {
-	return properties.put(name, value);
+    return properties.put(name, value);
   }
 
   @Override
@@ -86,6 +86,6 @@ public class SimpleConfigurator implements Configurator {
 
   @Override
   public String toString() {
-	  return properties.toString();
+    return properties.toString();
   }
 }
